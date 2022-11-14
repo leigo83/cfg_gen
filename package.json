@@ -7,6 +7,6 @@
     "start": "node ./routes/index.js"
   },
   "dependencies": {
-    "express": "~4.16.1",
+    "express": "~4.16.1"
   }
 }
