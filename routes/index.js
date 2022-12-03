@@ -28,11 +28,11 @@ var csvpath = '/../cfgList.csv'
 /* GET home page. */
 var rawdata;
 app.get('/', function(req, res, next) {
-  if (cfgDataOrigin.length == 0) {
+  /*if (cfgDataOrigin.length == 0) {
      rawdata = fs.readFileSync(listpath);
      if (rawdata != null) cfgData = JSON.parse(rawdata);
      cfgDataOrigin = cfgData;
-  }
+  }*/
   res.render('load', { title: 'Cfg List',
                         cfgData: cfgData});
 });
