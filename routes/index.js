@@ -5,6 +5,10 @@ var app = express();
 var path = require('path')
 const port = 3000;
 var hbs = require('express-handlebars');
+const multer = require('multer');
+const upload = multer({
+  dest: 'uploads/', // this saves your file into a directory called "uploads"
+});
 
 app.engine('hbs', hbs.engine({defaultLayout: null, extname: '.hbs'}));
 app.set('views', path.join(__dirname, '../views'));
@@ -35,6 +39,12 @@ app.get('/', function(req, res, next) {
   }*/
   res.render('load', { title: 'Cfg List',
                         cfgData: cfgData});
+});
+
+app.post('/', upload.single('file-to-upload'), (req, res) => {
+   data = fs.readFileSync(__dirname + "/../" + JSON.stringify(req.file.path).replace(/["]+/g, '')) + '';
+   console.log(__dirname + "/../" + JSON.stringify(req.file.path).replace(/["]+/g, ''));
+   console.log(data)
 });
 
 app.listen(process.env.PORT || port, ()=> console.log("example"));

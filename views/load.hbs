@@ -1,10 +1,15 @@
 <body>
    <input type="file" id="fileInput">
-   <button id="uploadButton">upload</button>
-   <p id="fileContent"><p>
+   <button id="uploadButton" onClick=test()>upload</button>
+   <p id="fileContent"></p>   
    <p id ="test"></p>
+   <form action="/" enctype="multipart/form-data" method="post">
+      <label>Import csv:<label>
+      <input type="file" name="file-to-upload">
+      <input type="submit" value="Upload">
+   </form>
    <script>
-      document.getElementById("uploadButton").onClick = () => {
+      function test() {
           let fileElement = document.getElementById('fileInput')
 
           let file = fileElement.file[0]
