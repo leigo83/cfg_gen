@@ -42,9 +42,17 @@ app.get('/', function(req, res, next) {
 });
 
 app.post('/', upload.single('file-to-upload'), (req, res) => {
-   data = fs.readFileSync(__dirname + "/../" + JSON.stringify(req.file.path).replace(/["]+/g, '')) + '';
+   filepath = __dirname + "/../" + JSON.stringify(req.file.path).replace(/["]+/g, '');
+   data = fs.readFileSync(filepath) + '';
    console.log(__dirname + "/../" + JSON.stringify(req.file.path).replace(/["]+/g, ''));
    console.log(data)
+   fs.unlink(path, function (err) {
+      if (err) {
+        console.error(err);
+      } else {
+        console.log("File removed:", path);
+      }
+   });
 });
 
 app.listen(process.env.PORT || port, ()=> console.log("example"));
