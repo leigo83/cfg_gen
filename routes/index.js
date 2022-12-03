@@ -42,7 +42,7 @@ app.get('/', function(req, res, next) {
 });
 
 app.post('/', upload.single('file-to-upload'), (req, res) => {
-   //data = fs.readFileSync(__dirname + "/../" + JSON.stringify(req.file.path).replace(/["]+/g, '')) + '';
+   data = fs.readFileSync(__dirname + "/../" + JSON.stringify(req.file.path).replace(/["]+/g, '')) + '';
    console.log(__dirname + "/../" + JSON.stringify(req.file.path).replace(/["]+/g, ''));
    console.log(data)
 });
