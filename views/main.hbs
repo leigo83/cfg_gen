@@ -1,0 +1,64 @@
+<h1>Fujin AV1E config list</h1>
+<p style="color:red">{{message}}</p>
+<button onclick="save_list_to_csv()" type="button">Outport list to csv</button>
+<button onclick="save_list()" type="button">Save list</button>
+<button onclick="restore()" type="button">Restore</button>
+<br></br>
+<form action="/" enctype="multipart/form-data" method="post">
+      <label>Import csv:<label>
+      <input type="file" name="file-to-upload">
+      <input type="submit" value="Upload">
+</form>
+<br></br> 
+<label>Add cfg:</label>
+<input type="file" name="inputfile" id="inputfile" value="Add File"></input>
+<br></br>
+<ul>
+{{#each cfgData}}
+<li>
+<a href="/view?id={{cfgid}}">{{cfgName}}</a>
+</li>
+{{/each}}
+</ul>
+
+<script>
+document.getElementById('inputfile')
+            .addEventListener('change', function(e) {
+
+            var fr=new FileReader();
+            var outputList = {};
+            var filename = e.target.files[0].name;
+            fr.onload=function(){
+                var data = fr.result;
+                lines = data.split("\n");
+                outputList["cfgid"] = -1;
+                outputList["cfgName"] = filename;
+                for (var i = 0; i < lines.length; i++) {
+                   if (lines[i].includes("=")) {
+                      data = lines[i].split("=");
+                      key = data[0].trim();
+                      data = data[1].trim();
+                      value = data.split("#");
+                      outputList[key] = value[0].trim();
+                   }
+                }
+                window.location.href = '/view?id=-1&text=' + JSON.stringify(outputList);
+            }
+            fr.readAsText(this.files[0]);
+        })
+
+function save_list_to_csv() {
+   window.location.href = '/save_list_to_csv';
+}
+
+
+function save_list() {
+   window.location.href = '/save_list';
+}
+
+function restore() {
+   window.location.href = '/restore';
+}
+
+</script>
+
