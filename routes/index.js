@@ -46,7 +46,7 @@ app.post('/', upload.single('file-to-upload'), (req, res) => {
    data = fs.readFileSync(filepath) + '';
    console.log(__dirname + "/../" + JSON.stringify(req.file.path).replace(/["]+/g, ''));
    console.log(data)
-   fs.unlink(path, function (err) {
+   fs.unlink(filepath, function (err) {
       if (err) {
         console.error(err);
       } else {
