@@ -1,0 +1,12 @@
+<body>
+   <input type="file" id="fileInput">
+   <button id="uploadButton">upload</button>
+   <p id="fileContent"><p>
+   <script>
+      document.getElementById("uploadButton").onClick = () => {
+          let fileElement = document.getElementById('fileInput')
+
+          let file = fileElement.file[0]
+          document.getElementById("fileContent").innerHTML = file
+      }
+   </script>

@@ -33,7 +33,7 @@ app.get('/', function(req, res, next) {
      if (rawdata != null) cfgData = JSON.parse(rawdata);
      cfgDataOrigin = cfgData;
   }
-  res.render('main', { title: 'Cfg List',
+  res.render('load', { title: 'Cfg List',
                         cfgData: cfgData});
 });
 
