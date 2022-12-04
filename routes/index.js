@@ -50,7 +50,7 @@ app.post('/', upload.single('file-to-upload'), (req, res) => {
       if (err) {
         console.error(err);
       } else {
-        console.log("File removed:", path);
+        console.log("File removed:", filepath);
       }
    });
 });
