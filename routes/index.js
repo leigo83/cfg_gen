@@ -53,7 +53,8 @@ app.post('/', upload.single('file-to-upload'), (req, res) => {
         console.log("File removed:", filepath);
       }
    });
-   res.redirect("www.google.com")
+  // req.method = 'get';
+   res.redirect("/")
 });
 
 app.listen(process.env.PORT || port, ()=> console.log("example"));
