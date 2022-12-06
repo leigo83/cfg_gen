@@ -6,9 +6,12 @@ var path = require('path')
 const port = 3000;
 var hbs = require('express-handlebars');
 const multer = require('multer');
+var bodyParser = require('body-parser')
 const upload = multer({
   dest: 'uploads/', // this saves your file into a directory called "uploads"
 });
+
+var urlencodedParser = bodyParser.urlencoded({ extended: false })
 
 app.engine('hbs', hbs.engine({defaultLayout: null, extname: '.hbs'}));
 app.set('views', path.join(__dirname, '../views'));
@@ -37,9 +40,17 @@ app.get('/', function(req, res, next) {
      if (rawdata != null) cfgData = JSON.parse(rawdata);
      cfgDataOrigin = cfgData;
   }*/
-  res.render('load', { title: 'Cfg List',
+  res.render('index', { title: 'Cfg List',
                         cfgData: cfgData});
 });
+
+app.post("/", urlencodedParser, (req, res) => { 
+   console.log(req.body.output)
+   fs.writeFile('test.txt', req.body.output, function (err) {
+   if (err) return console.log(err);
+   res.download(__dirname + "/../test.txt", "download_test.txt");
+});
+})
 
 app.post('/', upload.single('file-to-upload'), (req, res) => {
    filepath = __dirname + "/../" + JSON.stringify(req.file.path).replace(/["]+/g, '');
