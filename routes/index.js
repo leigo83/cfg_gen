@@ -41,6 +41,7 @@ var csvpath = '/../cfgList.csv';
 /* GET home page. */
 var rawdata;
 app.get('/', function(req, res, next) {
+  cfgDataOrigin = [];
   res.render('load');
 });
 
@@ -83,7 +84,8 @@ app.get('/cfgList', function(req, res) {
   let filepath = req.query.filepath;
   if (cfgDataOrigin.length == 0) {
     rawdata = fs.readFileSync(filepath);
-    if (rawdata != null) cfgData = JSON.stringify(rawdata);
+    if (rawdata != null) cfgData = JSON.parse(rawdata);
+    console.log(cfgData)
     cfgDataOrigin = cfgData;
   }
   if (fs.existsSync(filepath)) {
