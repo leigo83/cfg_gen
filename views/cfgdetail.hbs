@@ -1,0 +1,30 @@
+<h1>config: {{cfgField.cfgName}}</h1>
+<p style="color:red">{{message}}</p>
+<button onclick="moveback()">Go back to list</button>
+<ul>
+<form action="/update" method="POST">
+<button type="submit" formaction="genCfg">Generate this config</button>
+<button type="submit" formaction="save">Save</button>
+<button type="submit" formaction="delete">Delete</button>
+<br></br>
+{{#each cfgField}}
+{{#if (eq @key "cfgid")}}
+<label>{{@key}}</label>
+<input type="text" name="{{@key}}" value="{{this}}" readonly></input>
+{{else}}
+<label>{{@key}}</label>
+<input type="text" name="{{@key}}" value="{{this}}"></input>
+{{/if}}
+<br></br>
+{{/each}}
+</ul>
+</form>
+</form>
+
+<script>
+moveback = function () {
+  window.location.href = '/';
+}
+</script>
+
+
