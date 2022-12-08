@@ -40,11 +40,10 @@ app.get('/', function(req, res, next) {
      if (rawdata != null) cfgData = JSON.parse(rawdata);
      cfgDataOrigin = cfgData;
   }*/
-  res.render('index', { title: 'Cfg List',
-                        cfgData: cfgData});
+  res.render('load');
 });
 
-app.post("/", urlencodedParser, (req, res) => { 
+app.post("/download", urlencodedParser, (req, res) => {
    console.log(req.body.output)
    fs.writeFile('test.txt', req.body.output, function (err) {
    if (err) return console.log(err);
@@ -53,19 +52,29 @@ app.post("/", urlencodedParser, (req, res) => {
 })
 
 app.post('/', upload.single('file-to-upload'), (req, res) => {
-   filepath = __dirname + "/../" + JSON.stringify(req.file.path).replace(/["]+/g, '');
-   data = fs.readFileSync(filepath) + '';
-   console.log(__dirname + "/../" + JSON.stringify(req.file.path).replace(/["]+/g, ''));
-   console.log(data)
-   fs.unlink(filepath, function (err) {
+  let filepath = __dirname + "/../" + JSON.stringify(req.file.path).replace(/["]+/g, '');
+   console.log(filepath)
+   res.redirect("/cfgList?filepath=" + filepath);
+});
+
+app.get('/cfgList', function(req, res) {
+  let filepath = req.query.filepath;
+  if (cfgDataOrigin.length == 0) {
+    rawdata = fs.readFileSync(filepath);
+    if (rawdata != null) cfgData = JSON.parse(rawdata);
+    cfgDataOrigin = cfgData;
+  }
+  if (fs.existsSync(filepath)) {
+    fs.unlink(filepath, function (err) {
       if (err) {
         console.error(err);
       } else {
         console.log("File removed:", filepath);
       }
-   });
-  // req.method = 'get';
-   res.redirect("/")
+    });
+  }
+ res.render('cfglist', { title: 'Cfg List',
+                       cfgData: cfgData});
 });
 
 app.listen(process.env.PORT || port, ()=> console.log("example"));
