@@ -85,7 +85,6 @@ app.get('/cfgList', function(req, res) {
   if (cfgDataOrigin.length == 0) {
     rawdata = fs.readFileSync(filepath);
     if (rawdata != null) cfgData = JSON.parse(rawdata);
-    console.log(cfgData)
     cfgDataOrigin = cfgData;
   }
   if (fs.existsSync(filepath)) {
@@ -182,10 +181,10 @@ app.post("/save", function(req, res, next) {
  }
 });
 
-app.post("/genCfg", function(req, res, next) {
+app.post("/genCfg", urlencodedParser, function(req, res, next) {
  try {
     var data = "";
-    fs.open(__dirname + '/../../' + req.body.cfgName, "w", function (err, file) {
+    fs.open(__dirname + '/' + req.body.cfgName, "w", function (err, file) {
        if (err) throw err;
        console.log('File is opened in write mode.');
     });
@@ -194,8 +193,8 @@ app.post("/genCfg", function(req, res, next) {
        if (key == "cfgid" || key == "cfgName") continue;
        data = data + key + " = " + value + "\n";
     }
-    fs.writeFileSync(__dirname + '/../../' + req.body.cfgName, data);
-    res.redirect("/view?id="+req.body.cfgid + "&message=100" + "&location=" + __dirname + '/../../' + req.body.cfgName);
+    fs.writeFileSync(__dirname + '/' + req.body.cfgName, data);
+    res.download(__dirname + '/' + req.body.cfgName, req.body.cfgName);
  } catch (err) {next(err);}
 });
 
