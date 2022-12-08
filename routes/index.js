@@ -13,7 +13,13 @@ const upload = multer({
 
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 
-app.engine('hbs', hbs.engine({defaultLayout: null, extname: '.hbs'}));
+app.engine('hbs', hbs.engine({defaultLayout: null,
+                              extname: '.hbs',
+                              helpers: {
+                                eq: function(a, b) {
+                                  if (a == b) return true;
+                                  else return false;
+                                }}}));
 app.set('views', path.join(__dirname, '../views'));
 app.set('view engine', '.hbs');
 
@@ -46,6 +52,27 @@ app.post("/download", urlencodedParser, (req, res) => {
 });
 })
 
+app.post("/view", upload.single('cfg-to-upload'), (req, res) => {
+  let filepath = __dirname + "/../" + JSON.stringify(req.file.path).replace(/["]+/g, '');
+  let filename = JSON.stringify(req.file.path);
+  let data = fs.readFileSync(filepath, 'utf8');
+  let outputList = {};
+  console.log(data);
+  lines = data.split("\n");
+  outputList["cfgid"] = -1;
+  outputList["cfgName"] = filename;
+  for (var i = 0; i < lines.length; i++) {
+    if (lines[i].includes("=")) {
+      data = lines[i].split("=");
+      key = data[0].trim();
+      data = data[1].trim();
+      value = data.split("#");
+      outputList[key] = value[0].trim();
+    }
+  }
+  res.redirect("/view?id=-1&text=" + JSON.stringify(outputList));
+})
+
 app.post('/', upload.single('file-to-upload'), (req, res) => {
   let filepath = __dirname + "/../" + JSON.stringify(req.file.path).replace(/["]+/g, '');
    console.log(filepath)
@@ -56,7 +83,7 @@ app.get('/cfgList', function(req, res) {
   let filepath = req.query.filepath;
   if (cfgDataOrigin.length == 0) {
     rawdata = fs.readFileSync(filepath);
-    if (rawdata != null) cfgData = JSON.parse(rawdata);
+    if (rawdata != null) cfgData = JSON.stringify(rawdata);
     cfgDataOrigin = cfgData;
   }
   if (fs.existsSync(filepath)) {

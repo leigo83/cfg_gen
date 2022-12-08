@@ -10,8 +10,11 @@
       <input type="submit" value="Upload">
 </form>
 <br></br>
-<label>Add cfg:</label>
-<input type="file" name="inputfile" id="inputfile" value="Add File"></input>
+<form action="/view?id=-1" enctype="multipart/form-data" method="post">
+    <label>Add cfg:<label>
+    <input type="file" name="cfg-to-upload">
+    <input type="submit" value="Upload">
+</form>
 <br></br>
 <ul>
 {{#each cfgData}}
