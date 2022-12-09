@@ -1,19 +1,20 @@
 <h1>Fujin AV1E config list</h1>
 <p style="color:red">{{message}}</p>
-<button onclick="save_list_to_csv()" type="button">Outport list to csv</button>
-<button onclick="save_list()" type="button">Save list</button>
+<button onclick="save_list_to_csv()" type="button">Download list to csv</button>
+<button onclick="save_list()" type="button">Download json list</button>
 <button onclick="restore()" type="button">Restore</button>
 <br></br>
-<form action="/" enctype="multipart/form-data" method="post">
+<form action="/csv" enctype="multipart/form-data" method="post">
       <label>Import csv:<label>
       <input type="file" name="file-to-upload">
       <input type="submit" value="Upload">
 </form>
 <br></br>
-<form action="/view?id=-1" enctype="multipart/form-data" method="post">
+<form action="/view?id=-1" enctype="multipart/form-data" method="post" onsubmit="getFileName()">
     <label>Add cfg:<label>
-    <input type="file" name="cfg-to-upload">
-    <input type="submit" value="Upload">
+    <input type="file" name="cfg-to-upload" id="selectedFile">
+    <input type="hidden" id="hidden_original_file"  name="originalfilename" value="Feng">
+    <input type="submit" value="Upload" >
 </form>
 <br></br>
 <ul>
@@ -25,30 +26,12 @@
 </ul>
 
 <script>
-document.getElementById('inputfile')
-            .addEventListener('change', function(e) {
 
-            var fr=new FileReader();
-            var outputList = {};
-            var filename = e.target.files[0].name;
-            fr.onload=function(){
-                var data = fr.result;
-                lines = data.split("\n");
-                outputList["cfgid"] = -1;
-                outputList["cfgName"] = filename;
-                for (var i = 0; i < lines.length; i++) {
-                   if (lines[i].includes("=")) {
-                      data = lines[i].split("=");
-                      key = data[0].trim();
-                      data = data[1].trim();
-                      value = data.split("#");
-                      outputList[key] = value[0].trim();
-                   }
-                }
-                window.location.href = '/view?id=-1&text=' + JSON.stringify(outputList);
-            }
-            fr.readAsText(this.files[0]);
-        })
+function getFileName() {
+    let select_input = document.getElementById("selectedFile");
+    let select_output = document.getElementById("hidden_original_file");
+    select_output.value = select_input.value
+}
 
 function save_list_to_csv() {
    window.location.href = '/save_list_to_csv';

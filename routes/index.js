@@ -55,10 +55,11 @@ app.post("/download", urlencodedParser, (req, res) => {
 
 app.post("/view", upload.single('cfg-to-upload'), (req, res) => {
   let filepath = __dirname + "/../" + JSON.stringify(req.file.path).replace(/["]+/g, '');
-  let filename = JSON.stringify(req.file.path);
+  let originpath = req.body.originalfilename;
+  let lastdelimiter = originpath.lastIndexOf('\\');
+  let filename = originpath.substring(lastdelimiter + 1);
   let data = fs.readFileSync(filepath, 'utf8');
   let outputList = {};
-  console.log(data);
   lines = data.split("\n");
   outputList["cfgid"] = -1;
   outputList["cfgName"] = filename;
@@ -71,14 +72,52 @@ app.post("/view", upload.single('cfg-to-upload'), (req, res) => {
       outputList[key] = value[0].trim();
     }
   }
+  if (fs.existsSync(filepath)) {
+    fs.unlink(filepath, function (err) {
+      if (err) {
+        console.error(err);
+      } else {
+        console.log("File removed:", filepath);
+      }
+    });
+  }
   res.redirect("/view?id=-1&text=" + JSON.stringify(outputList));
 })
 
-app.post('/', upload.single('file-to-upload'), (req, res) => {
+app.post('/json', upload.single('file-to-upload'), (req, res) => {
   let filepath = __dirname + "/../" + JSON.stringify(req.file.path).replace(/["]+/g, '');
-   console.log(filepath)
-   res.redirect("/cfgList?filepath=" + filepath);
+  res.redirect("/cfgList?filepath=" + filepath);
 });
+
+app.post('/csv', upload.single('file-to-upload'), (req, res) => {
+  data = fs.readFileSync(__dirname + "/../" + JSON.stringify(req.file.path).replace(/["]+/g, '')) + '';
+  var keys = [];
+  var outputArray = [];
+  lines = data.split("\n");
+  for (var i = 0; i < lines.length; i++) {
+      if (!(lines[i].includes(","))) continue;
+      var values = lines[i].split(",");
+      if (i == 0) {
+           keys.push("cfgid");
+           for (var j = 0; j < values.length; j++) {
+                 values[j] = values[j].trim();
+                 if (values[j] == "") continue;
+                 keys.push(values[j]);
+           }
+      } else {
+           var outputList = {};
+           outputList[keys[0]] = outputArray.length;
+           for (var j = 0; j < (keys.length - 1 < values.length ? keys.length - 1 : values.length); j++) {
+               outputList[keys[j + 1]] = values[j].trim();
+           }
+           outputArray.push(outputList);
+      }
+  }
+  cfgData = outputArray;
+  res.render('cfglist', { title: 'Cfg List',
+                          cfgData: cfgData});
+});
+
 
 app.get('/cfgList', function(req, res) {
   let filepath = req.query.filepath;
@@ -104,7 +143,8 @@ app.get('/save_list', function(req, res, next) {
   var json = JSON.stringify(cfgData);
   cfgDataOrigin = cfgData;
   fs.writeFileSync(__dirname + listpath, json);
-  res.redirect("/status?value=1");
+  res.download(__dirname + listpath, "cfgList.json");
+//  res.redirect("/status?value=1");
 });
 
 app.get('/restore', function(req, res, next) {
@@ -138,7 +178,8 @@ app.get('/save_list_to_csv', function(req, res, next) {
  }
  // write CSV to a file
  fs.writeFileSync(__dirname + csvpath, csv);
- res.redirect('/status?value=2');
+ res.download(__dirname + csvpath, "cfgList.csv");
+ //res.redirect('/status?value=2');
 });
 
 app.get('/status', function(req, res, next) {
@@ -163,7 +204,7 @@ app.get('/view', function(req, res, next) {
  }
 });
 
-app.post("/save", function(req, res, next) {
+app.post("/save", urlencodedParser, function(req, res, next) {
  var id = req.body.cfgid;
  var i = 0;
  for (; i < cfgData.length; i++) {
@@ -198,7 +239,7 @@ app.post("/genCfg", urlencodedParser, function(req, res, next) {
  } catch (err) {next(err);}
 });
 
-app.post("/delete", function(req, res, next) {
+app.post("/delete", urlencodedParser, function(req, res, next) {
  var id = req.body.cfgid;
  var updatedcfgData = [];
  var index = 0;
@@ -215,6 +256,6 @@ app.post("/delete", function(req, res, next) {
                       cfgData: cfgData});
 });
 
-app.listen(process.env.PORT || port, ()=> console.log("example"));
+app.listen(process.env.PORT || port, ()=> console.log("cfg_gen"));
 
 module.exports = router;
